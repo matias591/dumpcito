@@ -1,0 +1,94 @@
+{
+ "name": "Cursor: finished only, aborted never alerts",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "cursor",
+   "payload": {
+    "conversation_id": "c1",
+    "generation_id": "g1",
+    "hook_event_name": "beforeSubmitPrompt",
+    "workspace_roots": [
+     "/work/web"
+    ],
+    "transcript_path": null,
+    "prompt": "add button"
+   },
+   "expectState": {
+    "cursor__c1": "working"
+   }
+  },
+  {
+   "t": 10,
+   "tool": "cursor",
+   "payload": {
+    "conversation_id": "c1",
+    "generation_id": "g1",
+    "hook_event_name": "postToolUse",
+    "workspace_roots": [
+     "/work/web"
+    ],
+    "transcript_path": null,
+    "tool_name": "Shell"
+   }
+  },
+  {
+   "t": 40,
+   "tool": "cursor",
+   "payload": {
+    "conversation_id": "c1",
+    "generation_id": "g1",
+    "hook_event_name": "stop",
+    "workspace_roots": [
+     "/work/web"
+    ],
+    "transcript_path": null,
+    "status": "completed",
+    "loop_count": 0
+   },
+   "expectEvents": [
+    {
+     "kind": "finished",
+     "tool": "cursor",
+     "session": "c1"
+    }
+   ],
+   "expectState": {
+    "cursor__c1": "done"
+   }
+  },
+  {
+   "t": 50,
+   "tool": "cursor",
+   "payload": {
+    "conversation_id": "c1",
+    "generation_id": "g1",
+    "hook_event_name": "beforeSubmitPrompt",
+    "workspace_roots": [
+     "/work/web"
+    ],
+    "transcript_path": null,
+    "prompt": "again"
+   }
+  },
+  {
+   "t": 90,
+   "tool": "cursor",
+   "payload": {
+    "conversation_id": "c1",
+    "generation_id": "g1",
+    "hook_event_name": "stop",
+    "workspace_roots": [
+     "/work/web"
+    ],
+    "transcript_path": null,
+    "status": "aborted",
+    "loop_count": 0
+   },
+   "expectEvents": [],
+   "expectState": {
+    "cursor__c1": "idle"
+   }
+  }
+ ]
+}

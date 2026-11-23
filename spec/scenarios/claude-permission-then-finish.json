@@ -1,0 +1,144 @@
+{
+ "name": "Claude: permission prompt alerts once, answer clears, long turn finish alerts",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "SessionStart",
+    "cwd": "/work/app"
+   },
+   "expectState": {
+    "claude__s1": "idle"
+   }
+  },
+  {
+   "t": 1,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "fix   the\nbug"
+   },
+   "expectState": {
+    "claude__s1": "working"
+   }
+  },
+  {
+   "t": 5,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PreToolUse",
+    "cwd": "/work/app",
+    "tool_name": "Bash"
+   }
+  },
+  {
+   "t": 6,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PermissionRequest",
+    "cwd": "/work/app",
+    "tool_name": "Bash"
+   },
+   "expectEvents": [
+    {
+     "kind": "needsAttention",
+     "tool": "claude",
+     "session": "s1"
+    }
+   ],
+   "expectState": {
+    "claude__s1": "waiting"
+   }
+  },
+  {
+   "t": 12,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Notification",
+    "cwd": "/work/app",
+    "notification_type": "permission_prompt",
+    "message": "Claude needs your permission to use Bash"
+   },
+   "expectState": {
+    "claude__s1": "waiting"
+   }
+  },
+  {
+   "t": 20,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PostToolUse",
+    "cwd": "/work/app",
+    "tool_name": "Bash"
+   },
+   "expectState": {
+    "claude__s1": "working"
+   }
+  },
+  {
+   "t": 40,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Stop",
+    "cwd": "/work/app"
+   },
+   "expectEvents": [
+    {
+     "kind": "finished",
+     "tool": "claude",
+     "session": "s1"
+    }
+   ],
+   "expectState": {
+    "claude__s1": "done"
+   }
+  },
+  {
+   "t": 41,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Stop",
+    "cwd": "/work/app"
+   },
+   "expectState": {
+    "claude__s1": "done"
+   }
+  },
+  {
+   "t": 100,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Notification",
+    "cwd": "/work/app",
+    "notification_type": "idle_prompt",
+    "message": "Claude is waiting for your input"
+   },
+   "expectState": {
+    "claude__s1": "done"
+   }
+  },
+  {
+   "t": 101,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "SessionEnd",
+    "cwd": "/work/app"
+   },
+   "expectState": {
+    "claude__s1": "absent"
+   }
+  }
+ ]
+}

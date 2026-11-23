@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key><string>com.matias.dumpcito</string>
+	<key>CFBundleName</key><string>Dumpcito</string>
+	<key>CFBundleDisplayName</key><string>Dumpcito</string>
+	<key>CFBundleIconFile</key><string>AppIcon</string>
+	<key>CFBundleExecutable</key><string>Dumpcito</string>
+	<key>CFBundlePackageType</key><string>APPL</string>
+	<key>CFBundleVersion</key><string>1</string>
+	<key>CFBundleShortVersionString</key><string>1.0.0</string>
+	<key>LSMinimumSystemVersion</key><string>14.0</string>
+	<key>LSUIElement</key><true/>
+	<key>NSPrincipalClass</key><string>NSApplication</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Dumpcito listens only while you hold the hotkey; speech is transcribed on this Mac.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Dumpcito turns what you say while holding the hotkey into text, on this Mac.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Dumpcito reads your calendar to tell you when a meeting is about to start.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Dumpcito reads your calendar to tell you when a meeting is about to start.</string>
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Dumpcito takes a screenshot of your screen when you hold the hotkey, so you can send it to a Claude session.</string>
+</dict>
+</plist>

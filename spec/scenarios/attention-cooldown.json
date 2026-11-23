@@ -1,0 +1,86 @@
+{
+ "name": "A second waiting within 30 s of the previous alert is suppressed",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "x"
+   }
+  },
+  {
+   "t": 2,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PermissionRequest",
+    "cwd": "/work/app",
+    "tool_name": "Bash"
+   },
+   "expectEvents": [
+    {
+     "kind": "needsAttention",
+     "tool": "claude",
+     "session": "s1"
+    }
+   ]
+  },
+  {
+   "t": 5,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PostToolUse",
+    "cwd": "/work/app",
+    "tool_name": "Bash"
+   },
+   "expectState": {
+    "claude__s1": "working"
+   }
+  },
+  {
+   "t": 8,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PermissionRequest",
+    "cwd": "/work/app",
+    "tool_name": "Edit"
+   },
+   "expectEvents": [],
+   "expectState": {
+    "claude__s1": "waiting"
+   }
+  },
+  {
+   "t": 60,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PostToolUse",
+    "cwd": "/work/app",
+    "tool_name": "Edit"
+   }
+  },
+  {
+   "t": 70,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PermissionRequest",
+    "cwd": "/work/app",
+    "tool_name": "Bash"
+   },
+   "expectEvents": [
+    {
+     "kind": "needsAttention",
+     "tool": "claude",
+     "session": "s1"
+    }
+   ]
+  }
+ ]
+}

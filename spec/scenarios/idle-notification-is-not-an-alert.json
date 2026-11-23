@@ -1,0 +1,75 @@
+{
+ "name": "idle_prompt and unknown notifications never alert",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "x"
+   }
+  },
+  {
+   "t": 30,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Stop",
+    "cwd": "/work/app"
+   },
+   "expectEvents": [
+    {
+     "kind": "finished",
+     "tool": "claude",
+     "session": "s1"
+    }
+   ]
+  },
+  {
+   "t": 95,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Notification",
+    "cwd": "/work/app",
+    "notification_type": "idle_prompt",
+    "message": "Claude is waiting for your input"
+   },
+   "expectEvents": [],
+   "expectState": {
+    "claude__s1": "done"
+   }
+  },
+  {
+   "t": 96,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Notification",
+    "cwd": "/work/app",
+    "notification_type": "auth_success",
+    "message": "ok"
+   },
+   "expectEvents": [],
+   "expectState": {
+    "claude__s1": "done"
+   }
+  },
+  {
+   "t": 97,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Notification",
+    "cwd": "/work/app",
+    "message": "Claude is waiting for your input"
+   },
+   "expectEvents": [],
+   "expectState": {
+    "claude__s1": "done"
+   }
+  }
+ ]
+}

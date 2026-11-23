@@ -1,0 +1,14 @@
+.build/
+.swiftpm/
+*.app
+DerivedData/
+.DS_Store
+.env
+captures/
+.build-*/
+build/
+docs/shots/
+graphify-out/
+windows/**/bin/
+windows/**/obj/
+*.user

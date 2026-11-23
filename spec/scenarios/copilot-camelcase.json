@@ -1,0 +1,38 @@
+{
+ "name": "VS Code Copilot camelCase payloads via the Claude hook",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "sessionId": "cp1",
+    "hookEventName": "UserPromptSubmit",
+    "cwd": "/work/c",
+    "prompt": "x"
+   },
+   "expectState": {
+    "claude__cp1": "working"
+   }
+  },
+  {
+   "t": 30,
+   "tool": "claude",
+   "payload": {
+    "sessionId": "cp1",
+    "hookEventName": "Stop",
+    "cwd": "/work/c",
+    "stop_hook_active": false
+   },
+   "expectEvents": [
+    {
+     "kind": "finished",
+     "tool": "claude",
+     "session": "cp1"
+    }
+   ],
+   "expectState": {
+    "claude__cp1": "done"
+   }
+  }
+ ]
+}

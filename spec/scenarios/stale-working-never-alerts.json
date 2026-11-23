@@ -1,0 +1,24 @@
+{
+ "name": "A session with no events for 15 min is shown idle and never alerts",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "x"
+   }
+  },
+  {
+   "t": 1000,
+   "tool": null,
+   "payload": null,
+   "expectEvents": [],
+   "expectState": {
+    "claude__s1": "idle"
+   }
+  }
+ ]
+}

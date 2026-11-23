@@ -1,0 +1,66 @@
+{
+ "name": "Sessions of different tools do not interfere",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "a",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "x"
+   }
+  },
+  {
+   "t": 0,
+   "tool": "codex",
+   "payload": {
+    "session_id": "a",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "y"
+   },
+   "expectState": {
+    "claude__a": "working",
+    "codex__a": "working"
+   }
+  },
+  {
+   "t": 30,
+   "tool": "codex",
+   "payload": {
+    "session_id": "a",
+    "hook_event_name": "PermissionRequest",
+    "cwd": "/work/app",
+    "tool_name": "Bash"
+   },
+   "expectEvents": [
+    {
+     "kind": "needsAttention",
+     "tool": "codex",
+     "session": "a"
+    }
+   ]
+  },
+  {
+   "t": 40,
+   "tool": "claude",
+   "payload": {
+    "session_id": "a",
+    "hook_event_name": "Stop",
+    "cwd": "/work/app"
+   },
+   "expectEvents": [
+    {
+     "kind": "finished",
+     "tool": "claude",
+     "session": "a"
+    }
+   ],
+   "expectState": {
+    "claude__a": "done",
+    "codex__a": "waiting"
+   }
+  }
+ ]
+}

@@ -1,0 +1,89 @@
+{
+ "name": "Codex: prompt, approval, stop",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "codex",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "SessionStart",
+    "cwd": "/work/app",
+    "source": "startup",
+    "model": "gpt-x"
+   },
+   "expectState": {
+    "codex__s1": "idle"
+   }
+  },
+  {
+   "t": 1,
+   "tool": "codex",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "turn_id": "t1",
+    "prompt": "refactor"
+   },
+   "expectState": {
+    "codex__s1": "working"
+   }
+  },
+  {
+   "t": 5,
+   "tool": "codex",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PermissionRequest",
+    "cwd": "/work/app",
+    "turn_id": "t1",
+    "tool_name": "Bash",
+    "tool_input": {
+     "command": "rm -rf x",
+     "description": "d"
+    }
+   },
+   "expectEvents": [
+    {
+     "kind": "needsAttention",
+     "tool": "codex",
+     "session": "s1"
+    }
+   ]
+  },
+  {
+   "t": 9,
+   "tool": "codex",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PostToolUse",
+    "cwd": "/work/app",
+    "turn_id": "t1",
+    "tool_name": "Bash"
+   },
+   "expectState": {
+    "codex__s1": "working"
+   }
+  },
+  {
+   "t": 45,
+   "tool": "codex",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Stop",
+    "cwd": "/work/app",
+    "turn_id": "t1"
+   },
+   "expectEvents": [
+    {
+     "kind": "finished",
+     "tool": "codex",
+     "session": "s1"
+    }
+   ],
+   "expectState": {
+    "codex__s1": "done"
+   }
+  }
+ ]
+}

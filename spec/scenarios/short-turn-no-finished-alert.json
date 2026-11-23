@@ -1,0 +1,31 @@
+{
+ "name": "Turn under 20 s never alerts finished",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "hi"
+   },
+   "expectState": {
+    "claude__s1": "working"
+   }
+  },
+  {
+   "t": 8,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Stop",
+    "cwd": "/work/app"
+   },
+   "expectEvents": [],
+   "expectState": {
+    "claude__s1": "done"
+   }
+  }
+ ]
+}

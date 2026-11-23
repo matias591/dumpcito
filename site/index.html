@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dumpcito — a tiny desktop companion for coding agents</title>
+<meta name="description" content="A small companion for your Mac or Windows PC that taps you when Claude Code, Codex or Cursor needs an answer or finishes. On the Mac it also nudges you before meetings. It finds you across displays, runs locally, and is open source.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f6f5fb; --surface:#ffffff; --surface2:#eeecf7; --ink:#17142b; --ink2:#55526d; --ink3:#8a87a3; --line:rgba(23,20,43,.11);
+  --violet:#6d4dff; --pink:#ee4f9c; --aqua:#12bfb0; --amber:#d98a12; --glow:rgba(109,77,255,.16);
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif; --body:"DM Sans",system-ui,-apple-system,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --shadow:0 24px 60px -24px rgba(40,24,120,.35);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c0a18; --surface:#15122a; --surface2:#1d1938; --ink:#f2f0ff; --ink2:#b6b2d2; --ink3:#7f7b9e; --line:rgba(242,240,255,.12);
+  --violet:#8b6dff; --pink:#ff5cae; --aqua:#2ee6d6; --amber:#ffb84d; --glow:rgba(139,109,255,.3);
+  --shadow:0 24px 60px -24px rgba(0,0,0,.8); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c0a18; --surface:#15122a; --surface2:#1d1938; --ink:#f2f0ff; --ink2:#b6b2d2; --ink3:#7f7b9e; --line:rgba(242,240,255,.12);
+  --violet:#8b6dff; --pink:#ff5cae; --aqua:#2ee6d6; --amber:#ffb84d; --glow:rgba(139,109,255,.3);
+  --shadow:0 24px 60px -24px rgba(0,0,0,.8); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--body);-webkit-font-smoothing:antialiased;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:clamp(42px,7.4vw,84px);line-height:.98}
+h2{font-size:clamp(30px,4.6vw,48px);line-height:1.04}
+h3{font-size:20px}
+p{margin:0;color:var(--ink2)}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.grad{background:linear-gradient(110deg,var(--violet),var(--pink) 55%,var(--aqua));-webkit-background-clip:text;background-clip:text;color:transparent}
+:focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:6px}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding-block:22px}
+.brand{display:flex;align-items:center;gap:10px;font:600 22px var(--display);text-decoration:none}
+.brand canvas{width:34px;height:34px}
+.navlinks{display:flex;align-items:center;gap:22px;font-size:15px}
+.navlinks a{text-decoration:none;color:var(--ink2)}
+.navlinks a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 15px var(--body);padding:13px 22px;border-radius:14px;background:var(--ink);color:var(--bg)!important;text-decoration:none;border:0;cursor:pointer;transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px -12px var(--violet)}
+.btn.ghost{background:transparent;color:var(--ink)!important;border:1px solid var(--line)}
+.btn.small{padding:9px 16px;font-size:14px;border-radius:11px}
+
+.hero{padding-block:48px 28px;display:flex;flex-direction:column;gap:28px;align-items:center;text-align:center}
+.hero p.lead{font-size:clamp(18px,2.2vw,22px);max-width:34em;color:var(--ink2)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.note{font:400 13px var(--mono);color:var(--ink3)}
+
+.desks{position:relative;width:100%;max-width:980px;aspect-ratio:16/8.2;margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:3.5%;padding:2.5%;border-radius:30px;background:radial-gradient(60% 80% at 50% 60%,var(--glow),transparent 70%),var(--surface2);border:1px solid var(--line);box-shadow:var(--shadow);user-select:none;overflow:hidden}
+.display{position:relative;border-radius:14px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.display .bar{display:flex;gap:5px;padding:9px 11px}
+.display .bar i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.display .lines{padding:6px 14px;display:flex;flex-direction:column;gap:9px}
+.display .lines b{display:block;height:7px;border-radius:4px;background:var(--surface2)}
+.display .lines b:nth-child(1){width:46%}.display .lines b:nth-child(2){width:78%}.display .lines b:nth-child(3){width:62%}.display .lines b:nth-child(4){width:70%}
+.display .tagline{position:absolute;left:12px;bottom:9px;font:400 10px var(--mono);color:var(--ink3)}
+.buddy{position:absolute;left:0;top:0;width:96px;height:96px;margin:-48px 0 0 -48px;will-change:transform;pointer-events:none}
+.cursor{position:absolute;left:0;top:0;width:22px;height:22px;pointer-events:none;will-change:transform;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.bubble{position:absolute;left:0;top:0;pointer-events:none;will-change:transform,opacity;opacity:0;transition:opacity .25s;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:9px 12px;box-shadow:var(--shadow);font:600 13px var(--display);display:flex;gap:10px;align-items:center;white-space:nowrap}
+.bubble i{width:9px;height:9px;border-radius:50%;border:2px solid var(--amber)}
+.bubble em{font:500 11px var(--mono);font-style:normal;color:var(--bg);background:var(--ink);padding:4px 8px;border-radius:7px}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.chip{font:500 14px var(--body);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink2);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+section{padding-block:84px;display:flex;flex-direction:column;gap:36px}
+.head{display:flex;flex-direction:column;gap:14px;max-width:44em}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card .ico{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--surface2)}
+.card .ico svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card p{font-size:16px}
+.skinrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.skincard{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.skincard canvas{width:132px;height:132px}
+.skincard p{font-size:15px}
+.steps{display:flex;flex-direction:column;gap:14px;counter-reset:s}
+.step{display:grid;grid-template-columns:44px 1fr;gap:18px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px}
+.step::before{counter-increment:s;content:counter(s);width:44px;height:44px;border-radius:14px;background:var(--ink);color:var(--bg);font:600 20px var(--display);display:grid;place-items:center}
+.step h3{margin-bottom:4px}
+.step p{font-size:16px}
+code,kbd{font:500 .88em var(--mono);background:var(--surface2);padding:2px 7px;border-radius:7px;color:var(--ink)}
+.code{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface2);border-radius:12px;padding:11px 14px;margin-top:10px;font:500 13px var(--mono);overflow:auto}
+.code button{flex:none;font:500 12px var(--mono);border:1px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:8px;padding:5px 9px;cursor:pointer}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.fact{display:flex;gap:14px;padding:18px 20px;border-radius:20px;background:var(--surface);border:1px solid var(--line)}
+.fact b{font:600 16px var(--display);display:block;margin-bottom:2px}
+.fact p{font-size:15px}
+.yes{flex:none;width:22px;height:22px;border-radius:50%;background:var(--aqua);display:grid;place-items:center;margin-top:3px}
+.yes svg{width:12px;height:12px;stroke:#04332e;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+details{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 22px}
+details+details{margin-top:10px}
+summary{cursor:pointer;font:600 17px var(--display);list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:"+";font:500 22px var(--mono);color:var(--ink3);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin-top:10px;font-size:16px}
+footer{padding-block:48px 64px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--ink3);font-size:14px}
+footer a{color:var(--ink2)}
+
+@media (max-width:820px){
+  .grid3,.grid2,.skinrow,.facts{grid-template-columns:1fr}
+  .navlinks a:not(.btn){display:none}
+  .buddy{width:72px;height:72px;margin:-36px 0 0 -36px}
+  .desks{aspect-ratio:16/11}
+  .skincard canvas{width:110px;height:110px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav aria-label="Main">
+    <a class="brand" href="#top"><canvas id="logo" width="68" height="68" aria-hidden="true"></canvas><span data-name>Dumpcito</span></a>
+    <div class="navlinks"><a href="#how">How it works</a><a href="#install">Install</a><a href="#privacy">Privacy</a><a data-repo href="#">GitHub</a><a class="btn small" data-download href="#install">Download</a></div>
+  </nav>
+
+  <header class="hero" id="top">
+    <span class="eyebrow">Free · open source · macOS 14+ · Windows 10/11</span>
+    <h1>The tiny buddy that <span class="grad">taps you</span> when Claude needs you.</h1>
+    <p class="lead">It lives on your desktop, finds you on whichever screen you are on, and speaks up only when a Claude Code session needs an answer or a meeting is about to start.</p>
+    <div class="cta"><a class="btn" data-download href="#install">Download for Mac</a><a class="btn ghost" href="#how">See how it works</a></div>
+    <span class="note">Everything runs on your Mac. No account, no network.</span>
+
+    <div class="desks" id="desks" role="img" aria-label="Animation: the buddy hops to the screen your cursor is on, and trails your cursor when Claude needs you.">
+      <div class="display" id="dA"><div class="bar"><i></i><i></i><i></i></div><div class="lines"><b></b><b></b><b></b><b></b></div><span class="tagline">Display 1</span></div>
+      <div class="display" id="dB"><div class="bar"><i></i><i></i><i></i></div><div class="lines"><b></b><b></b><b></b><b></b></div><span class="tagline">Display 2</span></div>
+      <canvas class="buddy" id="buddy" width="192" height="192"></canvas>
+      <div class="bubble" id="bubble"><i></i>Claude needs your OK<em>Allow</em></div>
+      <svg class="cursor" id="cursor" viewBox="0 0 22 22" aria-hidden="true"><path d="M3 2l15 8-6.5 1.8L8.6 18z" fill="#fff" stroke="#17142b" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="chips" role="group" aria-label="Choose a look">
+      <button class="chip" data-skin="jelly" aria-pressed="true">Jelly</button>
+      <button class="chip" data-skin="pixel" aria-pressed="false">Pixel</button>
+      <button class="chip" data-skin="pocket" aria-pressed="false">Pocket</button>
+    </div>
+  </header>
+
+  <section id="what" aria-labelledby="whatH">
+    <div class="head"><span class="eyebrow">What it does</span><h2 id="whatH">Quiet until it matters.</h2>
+      <p>No dashboards, no notification pile. One small character that reacts to three real things.</p></div>
+    <div class="grid3">
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></div><h3>Knows when Claude is waiting</h3><p>A permission prompt, a question, or a finished session. Connect Claude Code once and it reacts to the real event, not a guess.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 10h18M8 2v4M16 2v4"/></svg></div><h3>Nudges you before meetings</h3><p>Reads the Mac Calendar app, so Google, iCloud and Outlook calendars all work. One tap joins the call.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><h3>Hold a key and talk</h3><p>Say what you need while it grabs a screenshot, then send both to Claude Code. Speech is recognised on your Mac.</p></div>
+    </div>
+  </section>
+
+  <section id="finds" aria-labelledby="findsH">
+    <div class="head"><span class="eyebrow">Never lose it</span><h2 id="findsH">It follows you, and stays clickable.</h2>
+      <p>Move to another display and the buddy hops over. When it needs you it glides to your cursor on a spring, and the moment you reach for it, it holds still so you can click.</p></div>
+    <div class="skinrow" id="skinrow"></div>
+  </section>
+
+  <section id="how" aria-labelledby="howH">
+    <div class="head"><span class="eyebrow">How it works</span><h2 id="howH">Three minutes, start to finish.</h2></div>
+    <div class="steps">
+      <div class="step"><div><h3>Install it</h3><p>Download, drag to Applications, open. macOS will ask once because the app is not yet signed with an Apple Developer ID. The steps are below.</p></div></div>
+      <div class="step"><div><h3>Take the short tour</h3><p>Pick a look, connect Claude Code, and allow only what you want: calendar, microphone, screen recording. Every step can be skipped.</p></div></div>
+      <div class="step"><div><h3>Go back to work</h3><p>Right-click the buddy any time to switch skins, mute sounds or pause nudges. It stays out of the way until something needs you.</p></div></div>
+    </div>
+  </section>
+
+  <section id="install" aria-labelledby="instH">
+    <div class="head"><span class="eyebrow">Install</span><h2 id="instH">Get <span data-name>Dumpcito</span> for Mac.</h2>
+      <p>Requires macOS 14 or later, Apple Silicon or Intel. Free, MIT licensed.</p></div>
+    <div class="cta" style="justify-content:flex-start"><a class="btn" data-download href="#install">Download the latest release</a><a class="btn ghost" data-repo href="#">View the source</a></div>
+    <div class="steps">
+      <div class="step"><div><h3>Verify and move it</h3><p>Unzip, then check the download matches the checksum on the release page.</p><div class="code"><span>shasum -a 256 Dumpcito.zip</span><button type="button" data-copy="shasum -a 256 Dumpcito.zip">Copy</button></div><p style="margin-top:10px">Then drag <code>Dumpcito.app</code> to your Applications folder.</p></div></div>
+      <div class="step"><div><h3>Open it past the warning</h3><p>Open the app. macOS says it cannot verify it. Go to <strong>System Settings, Privacy &amp; Security</strong>, scroll down, click <strong>Open Anyway</strong> and confirm. Prefer Terminal?</p><div class="code"><span>xattr -dr com.apple.quarantine /Applications/Dumpcito.app</span><button type="button" data-copy="xattr -dr com.apple.quarantine /Applications/Dumpcito.app">Copy</button></div></div></div>
+      <div class="step"><div><h3>Allow screen recording once</h3><p>Only needed for hold-to-talk screenshots. Allow it in System Settings, then quit and reopen the app. macOS does not apply it until then.</p></div></div>
+    </div>
+    <p class="note" style="max-width:none">Why the warning? Apple charges for the signing certificate that removes it. The whole project is open, so you can read the code or build it yourself before you run it.</p>
+  </section>
+
+  <section id="privacy" aria-labelledby="privH">
+    <div class="head"><span class="eyebrow">Privacy and safety</span><h2 id="privH">Small enough to audit.</h2></div>
+    <div class="facts">
+      <div class="fact"><span class="yes"><svg viewBox="0 0 12 12"><path d="M2 6.5l3 3 5-6"/></svg></span><div><b>No network code</b><p>The app has no networking at all. Speech recognition runs on your Mac and never falls back to a server.</p></div></div>
+      <div class="fact"><span class="yes"><svg viewBox="0 0 12 12"><path d="M2 6.5l3 3 5-6"/></svg></span><div><b>Owner-only files</b><p>Everything it writes is readable only by you. Screenshots are deleted after 24 hours.</p></div></div>
+      <div class="fact"><span class="yes"><svg viewBox="0 0 12 12"><path d="M2 6.5l3 3 5-6"/></svg></span><div><b>Nothing is sent for you</b><p>Prompts come from what you say or type. New sessions open pre-filled and wait for you to press Enter.</p></div></div>
+      <div class="fact"><span class="yes"><svg viewBox="0 0 12 12"><path d="M2 6.5l3 3 5-6"/></svg></span><div><b>Easy to remove</b><p>Disconnect Claude Code from the menu and the hook is removed, with a backup of your settings kept.</p></div></div>
+    </div>
+    <p class="note" style="max-width:none">One thing to know: a screenshot you send to an agent with shell access can be read by that agent, so treat text on screen as input it will see.</p>
+  </section>
+
+  <section id="faq" aria-labelledby="faqH">
+    <div class="head"><span class="eyebrow">Questions</span><h2 id="faqH">Quick answers.</h2></div>
+    <div>
+      <details><summary>Which agents work?</summary><p>Claude Code (terminal, VS Code, Desktop Code tab) and Codex get &ldquo;needs you&rdquo; and &ldquo;finished&rdquo; alerts. Cursor gets &ldquo;finished&rdquo; only. Claude Desktop chat and ChatGPT desktop have no hooks, so they are not supported. The tour connects each one with a live check.</p></details>
+      <details><summary>Which calendars work?</summary><p>Any calendar your Mac already has. For Google Calendar, add the account in System Settings, Internet Accounts, with Calendars switched on.</p></details>
+      <details><summary>Can I send a prompt into a session that is already open?</summary><p>That needs a small companion plugin for Claude Code, which is not part of this release. Without it, hold-to-talk opens a new Claude Code session in VS Code with your prompt filled in.</p></details>
+      <details><summary>How do I make it quiet?</summary><p>Right-click the buddy: mute sounds, or pause nudges to stop all alerts and chasing.</p></details>
+      <details><summary>Is it affiliated with Anthropic?</summary><p>No. It is an independent open-source project that works alongside Claude Code.</p></details>
+    </div>
+  </section>
+
+  <footer><span><span data-name>Dumpcito</span> · MIT licensed · built by Matias Smeke</span><span><a data-repo href="#">Source</a> · <a data-releases href="#">Releases</a></span></footer>
+</div>
+
+<script src="app.config.js"></script>
+<script src="skins.js"></script>
+<script>
+(function(){
+  var A=window.APP||{}, S=window.DumpcitoSkins, RM=S.reducedMotion;
+  document.querySelectorAll('[data-name]').forEach(function(e){e.textContent=A.name});
+  document.querySelectorAll('[data-repo]').forEach(function(e){e.href=A.repo});
+  document.querySelectorAll('[data-download],[data-releases]').forEach(function(e){e.href=A.releases});
+  document.title=A.name+' — a tiny desktop companion for coding agents';
+  document.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){
+    var t=b.getAttribute('data-copy').replace('Dumpcito.app',A.name+'.app').replace('Dumpcito.zip',A.name+'.zip');
+    function done(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1400)}
+    try{navigator.clipboard.writeText(t).then(done,function(){})}catch(e){}})});
+
+  var skin='jelly';
+  function draw(c,k,L,t,opt){var ctx=c.getContext('2d');if(k==='jelly')S.jelly(ctx,c.width,c.height,t,L,opt);else if(k==='pixel')S.pixel(ctx,c.width,c.height,L);else S.pocket(ctx,c.width,c.height,L)}
+
+  /* logo + skin cards */
+  var logo=document.getElementById('logo');draw(logo,'jelly',3,1.2);
+  var row=document.getElementById('skinrow');
+  [['jelly','Jelly','Glossy aurora blob. Squishes, glows, blinks.'],['pixel','Pixel','8-bit mascot with an antenna LED.'],['pocket','Pocket','Pocket handheld with an LCD face.']].forEach(function(s){
+    var d=document.createElement('div');d.className='skincard';d.innerHTML='<canvas width="264" height="264" aria-hidden="true"></canvas><h3>'+s[1]+'</h3><p>'+s[2]+'</p>';row.appendChild(d);
+    var c=d.querySelector('canvas');draw(c,s[0],1,1.2);
+    if(s[0]==='jelly'&&!RM){var t0=performance.now();(function f(n){if(!document.hidden)draw(c,'jelly',1,(n-t0)/1000);requestAnimationFrame(f)})(t0)}
+  });
+
+  /* hero demo */
+  var desks=document.getElementById('desks'),dA=document.getElementById('dA'),dB=document.getElementById('dB'),
+      bud=document.getElementById('buddy'),cur=document.getElementById('cursor'),bub=document.getElementById('bubble');
+  document.querySelectorAll('.chip').forEach(function(ch){ch.addEventListener('click',function(){
+    skin=ch.getAttribute('data-skin');document.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',x===ch)});
+    if(RM)draw(bud,skin,5,1.2,{k:.62})})});
+  var LOOP=17;
+  // [time, x, y] in container fractions; display A is the left half, B the right
+  var K=[[0,.20,.45],[2.2,.34,.32],[4,.30,.55],[5.2,.66,.38],[7.2,.80,.55],[8.4,.70,.30],[9.6,.58,.24],[10.6,.60,.30]];
+  function ease(x){return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2}
+  function cursorAt(t,buddy){
+    if(t>=10.6&&t<12.4){var p=ease((t-10.6)/1.8),a=K[K.length-1];return [a[1]+(buddy.x-a[1])*p,a[2]+(buddy.y-a[2])*p]}
+    if(t>=12.4&&t<13.2)return [buddy.x,buddy.y];
+    if(t>=13.2){var p2=ease(Math.min(1,(t-13.2)/2.6)),b=[buddy.x,buddy.y];return [b[0]+(.22-b[0])*p2,b[1]+(.42-b[1])*p2]}
+    for(var i=0;i<K.length-1;i++){if(t>=K[i][0]&&t<K[i+1][0]){var q=ease((t-K[i][0])/(K[i+1][0]-K[i][0]));return [K[i][1]+(K[i+1][1]-K[i][1])*q,K[i][2]+(K[i+1][2]-K[i][2])*q]}}
+    return [K[0][1],K[0][2]];
+  }
+  var home={A:[.40,.74],B:[.90,.74]};
+  var B={x:home.A[0],y:home.A[1],vx:0,vy:0,disp:'A',since:0,goal:home.A.slice()};
+  var last=0,t0=performance.now(),clickPulse=0;
+  function frame(now){
+    var t=((now-t0)/1000)%LOOP,dt=Math.min(.05,(now-last)/1000||.016);last=now;
+    var W=desks.clientWidth,H=desks.clientHeight;
+    if(t<.05&&B.disp!=='A'){B.disp='A'}
+    var c=cursorAt(t,B),cd=c[0]<.5?'A':'B';
+    var attention=t>=8.4&&t<13.2;
+    var holdPx=60;
+    if(attention){
+      var dx=B.x*W-c[0]*W,dy=B.y*H-c[1]*H,dist=Math.hypot(dx,dy);
+      if(dist>holdPx){var ox=dx>=0?1:-1,oy=dy>=0?1:-1;B.goal=[c[0]+ox*46/W,c[1]+oy*46/H]} else B.goal=[B.x,B.y];
+      B.since=0;
+    }else{
+      if(cd!==B.disp){B.since+=dt;if(B.since>1.2){B.disp=cd;B.goal=home[cd].slice();B.since=0}}else{B.since=0;B.goal=home[B.disp].slice()}
+    }
+    var w=7,k=w*w;
+    B.vx+=(k*(B.goal[0]*W-B.x*W)/W-2*w*B.vx)*dt;B.vy+=(k*(B.goal[1]*H-B.y*H)/H-2*w*B.vy)*dt;
+    B.x+=B.vx*dt;B.y+=B.vy*dt;
+    var bob=skin==='jelly'?0:(RM?0:Math.sin(now/260)*2);
+    bud.style.transform='translate('+(B.x*W)+'px,'+(B.y*H+bob)+'px)';
+    cur.style.transform='translate('+(c[0]*W-3)+'px,'+(c[1]*H-2)+'px) scale('+(t>=12.4&&t<12.7?.82:1)+')';
+    var show=attention&&t<12.9;bub.style.opacity=show?1:0;
+    bub.style.transform='translate('+(Math.max(8,Math.min(W-bub.offsetWidth-8,B.x*W-bub.offsetWidth/2)))+'px,'+(B.y*H-bud.offsetHeight/2-bub.offsetHeight-6)+'px)';
+    if(skin==='jelly'){draw(bud,'jelly',5,(now-t0)/1000,{k:.62});bud._d=null}
+    else if(bud._d!==skin){draw(bud,skin,5,1);bud._d=skin}
+    requestAnimationFrame(frame);
+  }
+  if(RM){B.x=home.A[0];draw(bud,skin,5,1.2,{k:.62});bud.style.transform='translate('+(home.A[0]*desks.clientWidth)+'px,'+(home.A[1]*desks.clientHeight)+'px)';
+    cur.style.transform='translate('+(.3*desks.clientWidth)+'px,'+(.4*desks.clientHeight)+'px)'}
+  else{requestAnimationFrame(function(n){last=n;frame(n)})}
+  document.addEventListener('visibilitychange',function(){last=performance.now()});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{
+ "name": "Files that already exist when the app starts never alert",
+ "preseed": [
+  {
+   "v": 1,
+   "tool": "claude",
+   "session": "old1",
+   "cwd": "/work/a",
+   "title": "t",
+   "state": "waiting",
+   "at": -5000,
+   "workingSince": -60000,
+   "touched": -5000
+  },
+  {
+   "v": 1,
+   "tool": "claude",
+   "session": "old2",
+   "cwd": "/work/a",
+   "title": "t",
+   "state": "done",
+   "at": -9000,
+   "touched": -9000
+  }
+ ],
+ "steps": [
+  {
+   "t": 1,
+   "tool": null,
+   "payload": null,
+   "expectEvents": [],
+   "expectState": {
+    "claude__old1": "waiting",
+    "claude__old2": "done"
+   }
+  },
+  {
+   "t": 10,
+   "tool": "claude",
+   "payload": {
+    "session_id": "old1",
+    "hook_event_name": "PostToolUse",
+    "cwd": "/work/app"
+   },
+   "expectState": {
+    "claude__old1": "working"
+   }
+  },
+  {
+   "t": 50,
+   "tool": "claude",
+   "payload": {
+    "session_id": "old1",
+    "hook_event_name": "Stop",
+    "cwd": "/work/app"
+   },
+   "expectEvents": [
+    {
+     "kind": "finished",
+     "tool": "claude",
+     "session": "old1"
+    }
+   ]
+  }
+ ]
+}

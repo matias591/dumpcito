@@ -1,0 +1,46 @@
+{
+ "name": "Notification permission_prompt alone (no PermissionRequest) alerts when working",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "x"
+   }
+  },
+  {
+   "t": 10,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "PreToolUse",
+    "cwd": "/work/app",
+    "tool_name": "Bash"
+   }
+  },
+  {
+   "t": 16,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Notification",
+    "cwd": "/work/app",
+    "notification_type": "permission_prompt",
+    "message": "m"
+   },
+   "expectEvents": [
+    {
+     "kind": "needsAttention",
+     "tool": "claude",
+     "session": "s1"
+    }
+   ],
+   "expectState": {
+    "claude__s1": "waiting"
+   }
+  }
+ ]
+}

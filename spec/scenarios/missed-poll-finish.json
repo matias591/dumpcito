@@ -1,0 +1,32 @@
+{
+ "name": "Working then Stop between two polls still alerts (the done record carries workingSince)",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "long job"
+   },
+   "noPoll": true
+  },
+  {
+   "t": 60,
+   "tool": "claude",
+   "payload": {
+    "session_id": "s1",
+    "hook_event_name": "Stop",
+    "cwd": "/work/app"
+   },
+   "expectEvents": [
+    {
+     "kind": "finished",
+     "tool": "claude",
+     "session": "s1"
+    }
+   ]
+  }
+ ]
+}

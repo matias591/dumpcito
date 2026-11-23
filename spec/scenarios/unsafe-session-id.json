@@ -1,0 +1,35 @@
+{
+ "name": "Unsafe ids are dropped",
+ "steps": [
+  {
+   "t": 0,
+   "tool": "claude",
+   "payload": {
+    "session_id": "../../etc/x",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "x"
+   },
+   "expectEvents": []
+  },
+  {
+   "t": 1,
+   "tool": "claude",
+   "payload": {
+    "session_id": "",
+    "hook_event_name": "UserPromptSubmit",
+    "cwd": "/work/app",
+    "prompt": "x"
+   },
+   "expectEvents": []
+  },
+  {
+   "t": 2,
+   "tool": "claude",
+   "payload": {
+    "hook_event_name": "UserPromptSubmit"
+   },
+   "expectEvents": []
+  }
+ ]
+}
